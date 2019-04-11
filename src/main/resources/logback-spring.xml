@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+    <!-- 定义文件内容的输出格式 -->
+    <property name="PATTERN" value="%-12(%d{YYYY-MM-DD HH:mm:ss.SSS})\t|-\t%-5level\t[%thread]\t%c\t[%L]\t-|\t%msg%n"/>
+    <property name="PATTERN2"
+              value="(%d{yyyy-MM-dd HH:mm:ss.SSS}) %-5level\t[%thread][%X{hostName}][%X{userId}][%X{sessionId}] %logger{68} %line - %msg%n"/>
+    <!-- 定义生产代码日志文件路径 -->
+    <!--<property name="LOG_PATH" value="applog"/>-->
+    <property name="LOG_PATH" value="/data/logs"/>
+    <!-- 务必使用你的微服务名 -->
+    <property name="spring.application.name" value="bootdo"/> <!-- 这里请务必修改成你的微服务名 -->
+    <!-- ContenxtName必需设定为微服务名 -->
+    <contextName>${spring.application.name}</contextName>
+
+    <!--jdbc -->
+    <logger name="java.sql.Connection" level="DEBUG" />
+    <logger name="java.sql.PreparedStatement" level="DEBUG" />
+
+    <!--输出到控制台-->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!--按天生成日志-->
+    <appender name="logFile" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <Prudent>true</Prudent>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_PATH}/${spring.application.name}/%d{yyyy-MM-dd}/stdout.log</FileNamePattern>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>${PATTERN}</Pattern>
+        </layout>
+    </appender>
+
+    <!-- error日志 -->
+    <appender name="errorOut" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_PATH}/${spring.application.name}/%d{yyyy-MM-dd}/error.log</FileNamePattern>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <Pattern>${PATTERN}</Pattern>
+        </encoder>
+    </appender>
+
+    <logger name="cn.bootdo" level="DEBUG" additivity="false">
+        <appender-ref ref="console"/>
+        <appender-ref ref="logFile"/>
+        <appender-ref ref="errorOut"/>
+    </logger>
+
+
+    <root level="DEBUG">
+        <appender-ref ref="console"/>
+        <appender-ref ref="logFile"/>
+        <appender-ref ref="errorOut"/>
+    </root>
+</configuration>

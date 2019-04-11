@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- 定义文件内容的输出格式 -->
+    <property name="PATTERN" value="%-12(%d{yyyy-MM-dd HH:mm:ss.SSS}) |-%-5level [%thread] %c [%L] -| %msg%n"/>
+    <property name="PATTERN2"
+              value="%d %-5level [%thread][%X{hostName}][%X{userId}][%X{sessionId}] %logger{68} %line - %msg%n"/>
+    <!-- 定义生产代码日志文件路径 -->
+    <property name="HOME" value="/logs"/>
+    <!-- 务必使用你的微服务名 -->
+    <property name="spring.application.name" value="bootdo"/> <!-- 这里请务必修改成你的微服务名 -->
+    <!-- ContenxtName必需设定为微服务名 -->
+    <contextName>${spring.application.name}</contextName>
+
+    <!-- stdout appender定义 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${HOME}/%d{yyyy-MM-dd}.stdout.log</fileNamePattern>
+            <maxHistory>90</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>${PATTERN2}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="DEBUGOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>DEBUG</level>
+        </filter>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>${PATTERN2}</pattern>
+        </encoder>
+    </appender>
+
+
+    <!-- 全局日志文件 appender定义 -->
+    <appender name="lbcAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${HOME}/%d{yyyy-MM-dd}.app.log</fileNamePattern>
+            <maxHistory>90</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>${PATTERN2}</pattern>
+        </encoder>
+    </appender>
+
+
+    <!-- sql 日志 appender定义 -->
+    <appender name="sqlAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${HOME}/%d{yyyy-MM-dd}.sql.log</fileNamePattern>
+            <maxHistory>90</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>${PATTERN2}</pattern>
+        </encoder>
+    </appender>
+
+
+    <!-- 服务调用service日志 -->
+    <appender name="serviceAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${HOME}/%d{yyyy-MM-dd}.service.log</fileNamePattern>
+            <maxHistory>90</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>${PATTERN2}</pattern>
+        </encoder>
+    </appender>
+
+
+    <!-- 请求request日志 -->
+    <appender name="requestAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${HOME}/%d{yyyy-MM-dd}.request.log</fileNamePattern>
+            <maxHistory>90</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>${PATTERN2}</pattern>
+        </encoder>
+    </appender>
+
+
+    <!-- error日志 -->
+    <appender name="lbcErrorAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${HOME}/%d{yyyy-MM-dd}.error.log</FileNamePattern>
+            <maxHistory>90</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <Pattern>${PATTERN2}</Pattern>
+        </encoder>
+    </appender>
+
+
+    <!-- 应用程序日志 -->
+    <logger name="com.bootdo" value="INFO" additivity="false">
+        <appender-ref ref="lbcAppender"/>
+        <appender-ref ref="lbcErrorAppender"/>
+    </logger>
+
+
+    <!-- 数据库日志拦截  -->
+    <logger name="com.bootdo.blog.dao.ContentDao" value="INFO" additivity="false">
+        <appender-ref ref="sqlAppender"/>
+    </logger>
+
+
+    <!-- API 服务调用日志拦截  -->
+    <logger name="com.bootdo.blog.service.*" value="INFO" additivity="false">
+        <appender-ref ref="serviceAppender"/>
+        <appender-ref ref="lbcErrorAppender"/>
+    </logger>
+
+
+    <!-- 网站访问请求日志-->
+    <logger name="com.bootdo.common.aspect.RequestLogAspect" value="INFO" additivity="false">
+        <appender-ref ref="requestAppender"/>
+    </logger>
+
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="DEBUGOUT"/>
+        <appender-ref ref="lbcAppender"/>
+        <appender-ref ref="sqlAppender"/>
+        <appender-ref ref="serviceAppender"/>
+        <appender-ref ref="requestAppender"/>
+        <appender-ref ref="lbcErrorAppender"/>
+    </root>
+
+</configuration>
