@@ -24,8 +24,8 @@ import com.bootdo.common.utils.JSONUtils;
 import com.bootdo.common.utils.ShiroUtils;
 import com.bootdo.system.domain.UserDO;
 
-//@Aspect
-//@Component
+@Aspect
+@Component
 public class LogAspect {
     private static final Logger logger = LoggerFactory.getLogger(LogAspect.class);
 
@@ -94,5 +94,12 @@ public class LogAspect {
         sysLog.setGmtCreate(date);
         // 保存系统日志
         logService.save(sysLog);
+
+        //打印操作日志
+        //userId, username, operation, method,
+        String message = String.format("userOperation:%s\t%s\t%s\t%s",
+                sysLog.getUserId(), sysLog.getUsername()
+                , sysLog.getOperation(), sysLog.getMethod());
+        logger.debug(message);
     }
 }

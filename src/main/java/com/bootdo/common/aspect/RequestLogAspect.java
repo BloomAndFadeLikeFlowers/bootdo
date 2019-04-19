@@ -6,6 +6,7 @@ import com.alibaba.fastjson.serializer.SerializerFeature;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -59,6 +60,12 @@ public class RequestLogAspect {
         String queryString = request.getQueryString();
         String ip = getIpAddr(request);
         Object[] args = pjp.getArgs();
+
+        // 请求的方法名
+        String className = pjp.getTarget().getClass().getName();
+        String methodName = pjp.getSignature().getName();
+        String controllerMethod = className + "." + methodName + "()";
+
         String params = "";
         Object result = pjp.proceed();
         //getMethodMessage(args);
@@ -74,8 +81,8 @@ public class RequestLogAspect {
                 }
                 // params = URLDecoder.decode(params, "UTF-8");
             }
-            //"requestMethod:{},url:{},params:{},elapsed:{}ms,responseBody:{}."
-            logger.debug(requestMessageFlag + ":{}\t{}\t{}\t{}",  method, uri, params, (endTime - startTime));
+            //"requestMethod:{},url:{},params:{},controllerMethod{},elapsed:{},responseBody:{}."
+            logger.debug(requestMessageFlag + ":{}\t{}\t{}\t{}\t{}", method, uri, params, controllerMethod, (endTime - startTime));
 //            JSON.toJSONString(result, SerializerFeature.WriteMapNullValue)
             //logger.debug(requestEndFlag);
         } catch (Exception e) {
