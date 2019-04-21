@@ -81,8 +81,8 @@ public class RequestLogAspect {
                 }
                 // params = URLDecoder.decode(params, "UTF-8");
             }
-            //"requestMethod:{},url:{},params:{},controllerMethod{},elapsed:{},responseBody:{}."
-            logger.debug(requestMessageFlag + ":{}\t{}\t{}\t{}\t{}", method, uri, params, controllerMethod, (endTime - startTime));
+            //"requestMethod:{},url:{},params:{},controllerMethod{},elapsed:{},ip{},responseBody:{}."
+            logger.debug(requestMessageFlag + ":{}\t{}\t{}\t{}\t{}\t{}", method, uri, params, controllerMethod, (endTime - startTime),ip);
 //            JSON.toJSONString(result, SerializerFeature.WriteMapNullValue)
             //logger.debug(requestEndFlag);
         } catch (Exception e) {
